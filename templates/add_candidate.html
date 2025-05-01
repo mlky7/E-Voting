@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add New Candidate</h2>
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="party" class="form-label">Party</label>
+                    <input type="text" class="form-control" id="party" name="party" required>
+                </div>
+                <div class="mb-3">
+                    <label for="position" class="form-label">Position</label>
+                    <input type="text" class="form-control" id="position" name="position">
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Profile Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="qualifications" class="form-label">Qualifications</label>
+                    <textarea class="form-control" id="qualifications" name="qualifications" rows="3" placeholder="Enter each qualification on a new line"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="campaign_promises" class="form-label">Campaign Promises</label>
+                    <textarea class="form-control" id="campaign_promises" name="campaign_promises" rows="3" placeholder="Enter each promise on a new line"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="education" class="form-label">Education</label>
+                    <input type="text" class="form-control" id="education" name="education">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone">
+                </div>
+                <div class="mb-3">
+                    <label for="website" class="form-label">Website</label>
+                    <input type="url" class="form-control" id="website" name="website">
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Candidate</button>
+    </form>
+</div>
+{% endblock %}

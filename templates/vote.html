@@ -1,0 +1,133 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3>Vote in Election: {{ election.title }}</h3>
+        </div>
+        <div class="card-body">
+          <p class="lead">{{ election.description }}</p>
+
+          {% if has_voted %}
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> You have already voted in this
+            election. You can change your vote if you wish.
+          </div>
+          {% endif %}
+
+          <form method="POST">
+            <div class="candidates-grid mb-4">
+              {% for candidate in election.candidates %}
+              <div
+                class="card candidate-card mb-4 {% if previous_vote == candidate.id %}candidate-voted{% endif %}"
+              >
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    {% if candidate.image_url %}
+                    <img
+                      src="{{ url_for('uploaded_file', filename=candidate.image_url) }}"
+                      class="candidate-image img-fluid rounded-start"
+                      alt="{{ candidate.name }}"
+                      onerror="this.src='{{ url_for('static', filename='images/default-candidate.png') }}';"
+                    />
+                    {% else %}
+                    <img
+                      src="{{ url_for('static', filename='images/default-candidate.png') }}"
+                      class="candidate-image img-fluid rounded-start"
+                      alt="Default candidate image"
+                    />
+                    {% endif %}
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body text-white">
+                      <h5 class="card-title text-white">
+                        {{ candidate.name }}
+                      </h5>
+                      <p class="card-text text-white">
+                        <strong>Party:</strong> {{ candidate.party }}
+                      </p>
+                      <p class="card-text text-white">
+                        <strong>Position:</strong> {{ candidate.position }}
+                      </p>
+
+                      {% if candidate.description %}
+                      <p class="card-text text-white">
+                        {{ candidate.description }}
+                      </p>
+                      {% endif %} {% if candidate.education %}
+                      <p class="card-text text-white">
+                        <strong>Education:</strong> {{ candidate.education }}
+                      </p>
+                      {% endif %} {% if candidate.qualifications and
+                      candidate.qualifications|length > 0 %}
+                      <div class="mb-2">
+                        <strong class="text-white">Qualifications:</strong>
+                        <ul class="text-white">
+                          {% for qualification in candidate.qualifications %}
+                          <li>{{ qualification }}</li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                      {% endif %} {% if candidate.campaign_promises and
+                      candidate.campaign_promises|length > 0 %}
+                      <div class="mb-2">
+                        <strong class="text-white">Campaign Promises:</strong>
+                        <ul class="text-white">
+                          {% for promise in candidate.campaign_promises %}
+                          <li>{{ promise }}</li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                      {% endif %} {% if candidate.contact_info %}
+                      <div class="mb-2">
+                        <strong class="text-white">Contact Information:</strong>
+                        <p class="text-white mb-0">
+                          {% if candidate.contact_info.email %}
+                          <i class="fas fa-envelope"></i> {{
+                          candidate.contact_info.email }}<br />
+                          {% endif %} {% if candidate.contact_info.phone %}
+                          <i class="fas fa-phone"></i> {{
+                          candidate.contact_info.phone }}<br />
+                          {% endif %} {% if candidate.contact_info.website %}
+                          <i class="fas fa-globe"></i> {{
+                          candidate.contact_info.website }} {% endif %}
+                        </p>
+                      </div>
+                      {% endif %}
+
+                      <div class="form-check mt-3">
+                        <input class="form-check-input" type="radio"
+                        name="candidate" id="candidate{{ loop.index }}"
+                        value="{{ candidate.id }}" {% if previous_vote ==
+                        candidate.id %}checked{% endif %} />
+                        <label
+                          class="form-check-label text-white"
+                          for="candidate{{ loop.index }}"
+                        >
+                          {% if previous_vote == candidate.id %} Your current
+                          vote {% else %} Vote for this candidate {% endif %}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                {% if has_voted %}Update Vote{% else %}Submit Vote{% endif %}
+              </button>
+              <a href="{{ url_for('dashboard') }}" class="btn btn-secondary"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

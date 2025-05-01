@@ -1,0 +1,177 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3>Create New Election</h3>
+        </div>
+        <div class="card-body">
+          {% with messages = get_flashed_messages() %} {% if messages %} {% for
+          message in messages %}
+          <div class="alert alert-info">{{ message }}</div>
+          {% endfor %} {% endif %} {% endwith %}
+
+          <form method="POST" action="{{ url_for('create_election') }}">
+            <div class="mb-3">
+              <label for="title" class="form-label">Election Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                id="description"
+                name="description"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="start_date" class="form-label">Start Date</label>
+              <input
+                type="date"
+                class="form-control"
+                id="start_date"
+                name="start_date"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="end_date" class="form-label">End Date</label>
+              <input
+                type="date"
+                class="form-control"
+                id="end_date"
+                name="end_date"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Select Candidates</label>
+              <div class="candidate-list">
+                {% if candidates %} {% for candidate in candidates %}
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="candidates"
+                    value="{{ candidate._id }}"
+                    id="candidate{{ loop.index }}"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="candidate{{ loop.index }}"
+                  >
+                    {{ candidate.name }} - {{ candidate.party }} {% if
+                    candidate.position %}
+                    <small class="text-muted">({{ candidate.position }})</small>
+                    {% endif %}
+                  </label>
+                </div>
+                {% endfor %} {% else %}
+                <div class="alert alert-warning">
+                  No candidates available. Please
+                  <a href="{{ url_for('add_candidate') }}">add candidates</a>
+                  first.
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="mb-3">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                {%
+                if
+                not
+                candidates
+                %}disabled{%
+                endif
+                %}
+              >
+                Create Election
+              </button>
+              <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="btn btn-secondary"
+              >
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const formattedToday = `${yyyy}-${mm}-${dd}`;
+
+    const startDateInput = document.getElementById("start_date");
+    const endDateInput = document.getElementById("end_date");
+
+    startDateInput.min = formattedToday;
+    endDateInput.min = formattedToday;
+
+    startDateInput.addEventListener("change", function () {
+      if (this.value) {
+        endDateInput.min = this.value;
+
+        if (endDateInput.value && endDateInput.value < this.value) {
+          endDateInput.value = this.value;
+        }
+      }
+    });
+
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+      const startDate = new Date(startDateInput.value);
+      const endDate = new Date(endDateInput.value);
+      const now = new Date();
+
+      document
+        .querySelectorAll(".validation-error")
+        .forEach((el) => el.remove());
+
+      let hasError = false;
+
+      if (startDate < now) {
+        event.preventDefault();
+        hasError = true;
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "validation-error text-danger mt-1";
+        errorMsg.textContent = "Start date cannot be in the past";
+        startDateInput.parentNode.appendChild(errorMsg);
+      }
+
+      if (endDate <= startDate) {
+        event.preventDefault();
+        hasError = true;
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "validation-error text-danger mt-1";
+        errorMsg.textContent = "End date must be after start date";
+        endDateInput.parentNode.appendChild(errorMsg);
+      }
+
+      if (hasError) {
+        document
+          .querySelector(".validation-error")
+          .scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+  });
+</script>
+{% endblock %}

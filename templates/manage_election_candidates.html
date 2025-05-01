@@ -1,0 +1,92 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3>Manage Candidates for {{ election.title }}</h3>
+        </div>
+        <div class="card-body">
+          {% with messages = get_flashed_messages() %} {% if messages %} {% for
+          message in messages %}
+          <div class="alert alert-info">{{ message }}</div>
+          {% endfor %} {% endif %} {% endwith %}
+
+          <form method="POST">
+            <div class="mb-3">
+              <label class="form-label">Select Candidates</label>
+              <div class="candidate-list">
+                {% if all_candidates %} {% for candidate in all_candidates %}
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="candidates"
+                    value="{{ candidate._id }}"
+                    id="candidate{{ loop.index }}"
+                    {%
+                    if
+                    candidate._id
+                    in
+                    current_candidate_ids
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  <label
+                    class="form-check-label"
+                    for="candidate{{ loop.index }}"
+                  >
+                    {{ candidate.name }} - {{ candidate.party }}
+                    <small class="text-muted"
+                      >({{ candidate.position or '' }})</small
+                    >
+                  </label>
+                </div>
+                {% endfor %} {% else %}
+                <div class="alert alert-warning">
+                  No candidates available. Please
+                  <a href="{{ url_for('add_candidate') }}">add candidates</a>
+                  first.
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              {%
+              if
+              not
+              all_candidates
+              %}disabled{%
+              endif
+              %}
+            >
+              Update Candidates
+            </button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary"
+              >Cancel</a
+            >
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+      const checkboxes = document.querySelectorAll(
+        'input[name="candidates"]:checked'
+      );
+      if (checkboxes.length === 0) {
+        event.preventDefault();
+        alert("Please select at least one candidate");
+      }
+    });
+  });
+</script>
+{% endblock %}

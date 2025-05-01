@@ -1,0 +1,161 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <h2>Edit Candidate</h2>
+  <form
+    method="POST"
+    enctype="multipart/form-data"
+    class="needs-validation"
+    novalidate
+  >
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            value="{{ candidate.name }}"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="party" class="form-label">Party</label>
+          <input
+            type="text"
+            class="form-control"
+            id="party"
+            name="party"
+            value="{{ candidate.party }}"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="position" class="form-label">Position</label>
+          <input
+            type="text"
+            class="form-control"
+            id="position"
+            name="position"
+            value="{{ candidate.position }}"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="3"
+            required
+          >
+{{ candidate.description }}</textarea
+          >
+        </div>
+        <div class="mb-3">
+          <label for="image" class="form-label">Profile Image</label>
+          {% if candidate.image_url %}
+          <div class="mb-2">
+            <img
+              src="{{ url_for('uploaded_file', filename=candidate.image_url) }}"
+              alt="Current profile image"
+              style="max-width: 200px"
+              onerror="this.src='{{ url_for('static', filename='images/default-candidate.png') }}';"
+            />
+          </div>
+          {% endif %}
+          <input
+            type="file"
+            class="form-control"
+            id="image"
+            name="image"
+            accept="image/*"
+          />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="qualifications" class="form-label">Qualifications</label>
+          <textarea
+            class="form-control"
+            id="qualifications"
+            name="qualifications"
+            rows="3"
+          >
+{{ candidate.qualifications|join('\n') if candidate.qualifications else '' }}</textarea
+          >
+        </div>
+        <div class="mb-3">
+          <label for="campaign_promises" class="form-label"
+            >Campaign Promises</label
+          >
+          <textarea
+            class="form-control"
+            id="campaign_promises"
+            name="campaign_promises"
+            rows="3"
+          >
+{{ candidate.campaign_promises|join('\n') if candidate.campaign_promises else '' }}</textarea
+          >
+        </div>
+        <div class="mb-3">
+          <label for="education" class="form-label">Education</label>
+          <input
+            type="text"
+            class="form-control"
+            id="education"
+            name="education"
+            value="{{ candidate.education if candidate.education else '' }}"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            value="{{ candidate.contact_info.email }}"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone</label>
+          <input
+            type="tel"
+            class="form-control"
+            id="phone"
+            name="phone"
+            value="{{ candidate.contact_info.phone }}"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="website" class="form-label">Website</label>
+          <input
+            type="url"
+            class="form-control"
+            id="website"
+            name="website"
+            value="{{ candidate.contact_info.website }}"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary">Update Candidate</button>
+      <div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary"
+          >Cancel</a
+        >
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick="confirmDeleteCandidate('{{ candidate._id }}', '{{ candidate.name }}')"
+        >
+          <i class="fas fa-trash"></i> Delete Candidate
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

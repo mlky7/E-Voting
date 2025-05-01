@@ -1,0 +1,94 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-4">
+  <div class="col">
+    <h2>Elections Dashboard</h2>
+  </div>
+  {% if current_user.role == 'admin' %}
+  <div class="col text-end">
+    <a href="{{ url_for('create_election') }}" class="btn btn-primary"
+      >Create New Election</a
+    >
+  </div>
+  {% endif %}
+</div>
+
+<div class="row">
+  {% for election in elections %}
+  <div class="col-md-4 mb-4">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="card-title mb-0">{{ election.title }}</h5>
+        <span
+          class="badge {% if election.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}"
+        >
+          {{ election.status|title }}
+        </span>
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ election.description }}</p>
+        <p class="card-text">
+          <small class="text-light">
+            Start: {{ election.start_date.strftime('%Y-%m-%d') }}<br />
+            End: {{ election.end_date.strftime('%Y-%m-%d') }}
+          </small>
+        </p>
+        {% if election._id|string in current_user.voted_elections %}
+        <a
+          href="{{ url_for('vote', election_id=election._id) }}"
+          class="btn btn-warning {% if election.status == 'completed' %}disabled{% endif %}"
+          {% if election.status == 'completed' %}aria-disabled="true" onclick="event.preventDefault(); alert('Voting is not allowed for completed elections.');"{% endif %}
+        >
+          <i class="fas fa-edit"></i> Change Vote
+        </a>
+        {% if election.status == 'completed' or current_user.role == 'admin' %}
+        <button
+          onclick="showResults('{{ election._id|string }}')"
+          class="btn btn-secondary"
+          data-bs-toggle="modal"
+          data-bs-target="#resultsModal"
+        >
+          View Results
+        </button>
+        {% endif %} {% else %}
+        <a
+          href="{{ url_for('vote', election_id=election._id) }}"
+          class="btn btn-primary {% if election.status == 'completed' %}disabled{% endif %}"
+          {% if election.status == 'completed' %}aria-disabled="true" onclick="event.preventDefault(); alert('Voting is not allowed for completed elections.');"{% endif %}
+        >
+          Vote
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Election Results</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" id="resultsContent" style="min-height: 400px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var resultModal = new bootstrap.Modal(
+      document.getElementById("resultsModal")
+    );
+  });
+</script>
+{% endblock %}
+
+
